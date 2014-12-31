@@ -6,7 +6,13 @@ Using the FileSystem implementation you can abstract encryption operations from 
 
 The implementation is tested with - but not limited to - AES block cipher (128-bit symmetric key) with CTR mode (AES/CTR/NoPadding).
 
-Requires [OpenJDK 1.7 or later](http://openjdk.java.net/) or [Oracle JDK 7](http://java.oracle.com)
+Only file content is encrypted, there is no encryption of directory or file names. Each file is encrypted with a different IV ([initialization vector](http://en.wikipedia.org/wiki/Initialization_vector)) that depends on its unique path relative to the filesystem root directory.
+The root directory is similar to a mountpoint that contains all directories and files that are subject to the encryption. To keep IVs unique please assure to use different symmetric keys for different encrypted file systems. In other words, use a specific symmetric key for a filesystem root directory only.
+
+The fact that file names remain unencrypted allows an attacker to guess its content. Please be aware that this might allow to decrypt the content of the single file that contains the guessed content.
+There is currently no planning to add encryption of directory or file names because the current use cases require these names to be available in cleartext for direct access.
+
+encfs4j requires [OpenJDK 1.7 or later](http://openjdk.java.net/) or [Oracle JDK 7](http://java.oracle.com)
 
 Two modes of operation
 ----------------------
