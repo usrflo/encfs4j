@@ -50,8 +50,8 @@ public class EncryptedFileSystemTest {
 		env.put(EncryptedFileSystemProvider.SECRET_KEY, "f31BmUS)&?O!19W:"); // 128
 																				// bit
 																				// key
-		env.put(EncryptedFileSystemProvider.FILESYSTEM_ROOT_URI, "file://"
-				+ persistentFile.getParent());
+		env.put(EncryptedFileSystemProvider.FILESYSTEM_ROOT_URI, "file:///"
+				+ persistentFile.getParent().replaceAll("\\\\", "/"));
 		// env.put(EncryptedFileSystemProvider.REVERSE_MODE, "true");
 
 		URI uri = URI.create("enc:///");
@@ -61,7 +61,7 @@ public class EncryptedFileSystemTest {
 	@Test
 	public void testSyntaxA() throws IOException {
 
-		Path path = fs.getPath(persistentFile.getAbsolutePath());
+		Path path = fs.getPath(persistentFile.getAbsolutePath().replaceAll("\\\\", "/"));
 		if (!Files.exists(path)) {
 			Files.createFile(path);
 		}
@@ -85,8 +85,8 @@ public class EncryptedFileSystemTest {
 	@Test
 	public void testSyntaxB() throws IOException {
 
-		Path path = Paths.get(URI.create("enc://"
-				+ persistentFile.getAbsolutePath()));
+		Path path = Paths.get(URI.create("enc:///"
+				+ persistentFile.getAbsolutePath().replaceAll("\\\\", "/")));
 		if (!Files.exists(path)) {
 			Files.createFile(path);
 		}
@@ -112,8 +112,8 @@ public class EncryptedFileSystemTest {
 	public void testMove() throws IOException {
 		// Files.move(tempFile, path, StandardCopyOption.ATOMIC_MOVE);
 
-		Path path = Paths.get(URI.create("enc://"
-				+ persistentFile.getAbsolutePath()));
+		Path path = Paths.get(URI.create("enc:///"
+				+ persistentFile.getAbsolutePath().replaceAll("\\\\", "/")));
 		if (!Files.exists(path)) {
 			Files.createFile(path);
 		}
@@ -125,8 +125,8 @@ public class EncryptedFileSystemTest {
 		File anotherFile = File.createTempFile("EncryptedFileSystem-",
 				".testmove");
 		anotherFile.deleteOnExit();
-		Path anotherPath = Paths.get(URI.create("file://"
-				+ anotherFile.getAbsolutePath()));
+		Path anotherPath = Paths.get(URI.create("file:///"
+				+ anotherFile.getAbsolutePath().replaceAll("\\\\", "/")));
 
 		Files.move(path, anotherPath, StandardCopyOption.COPY_ATTRIBUTES,
 				StandardCopyOption.REPLACE_EXISTING);
