@@ -1,7 +1,8 @@
 encfs4j
 =======
 
-encfs4j (Encrypted File System for Java) is a minimalistic [Java FileSystem](http://openjdk.java.net/projects/nio/javadoc/java/nio/file/FileSystem.html) implementation that encrypts/decrypts file content on-the-fly.
+encfs4j (Encrypted File System for Java) is a minimalist [Java FileSystem](http://openjdk.java.net/projects/nio/javadoc/java/nio/file/FileSystem.html) implementation that encrypts/decrypts file content on-the-fly.
+Using the FileSystem implementation you can abstract encryption operations from random file access. Extending existing applications with encrypted file storage is simplified by this means of transparency.
 
 The implementation is tested with - but not limited to - AES block cipher (128-bit symmetric key) with CTR mode (AES/CTR/NoPadding).
 
@@ -10,11 +11,11 @@ Requires [OpenJDK 1.7 or later](http://openjdk.java.net/) or [Oracle JDK 7](http
 Two modes of operation
 ----------------------
 
-- default: persist encrypted files while processing unencrypted files.
-  Sample: an existing Java application should be extended to read/write encrypted files from/to disk without changing existing stream operations.
+- **default**: persist encrypted files while processing unencrypted files.
+  *Sample:* an existing Java application is extended to read/write encrypted files from/to disk without changing existing stream operations.
 
-- reverse: persist unencrypted files while processing encrypted files.
-  Sample: you want to sync locally unencrypted data to a remote file store and file content should be encrypted on-the-fly.
+- **reverse**: persist unencrypted files while processing encrypted files.
+  *Sample:* sync locally unencrypted data to a remote file store with file content being encrypted on-the-fly. 
 
 
 Warning
@@ -25,8 +26,8 @@ This software is still unstable and there might be data corruption bugs hiding. 
 If you encounter any problems please create an issue on Github.
 
 
-Sample Implementation
----------------------
+Sample Integration
+------------------
 
 ```Java
 FileSystemProvider provider = new EncryptedFileSystemProvider();

@@ -1,2 +1,2 @@
-# if not present, FileSystems.newFileSystem throw NotProviderFoundException
+# if not present, FileSystems.newFileSystem throws NotProviderFoundException
 de.agitos.encfs4j.EncryptedFileSystemProvider

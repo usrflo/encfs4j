@@ -38,15 +38,20 @@ public class EncryptedFileSystemTest {
 		persistentFile = File.createTempFile("EncryptedFileSystem-", ".test");
 		persistentFile.deleteOnExit();
 
-		// According to https://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#Cipher
+		// According to
+		// https://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#Cipher
 
 		provider = new EncryptedFileSystemProvider();
-		Map<String,String> env = new HashMap<String,String>();
+		Map<String, String> env = new HashMap<String, String>();
 		env.put(EncryptedFileSystemProvider.CIPHER_ALGORITHM, "AES");
 		env.put(EncryptedFileSystemProvider.CIPHER_ALGORITHM_MODE, "CTR");
-		env.put(EncryptedFileSystemProvider.CIPHER_ALGORITHM_PADDING, "NoPadding");
-		env.put(EncryptedFileSystemProvider.SECRET_KEY, "f31BmUS)&?O!19W:"); // 128 bit key
-		env.put(EncryptedFileSystemProvider.FILESYSTEM_ROOT_URI, "file://"+persistentFile.getParent());
+		env.put(EncryptedFileSystemProvider.CIPHER_ALGORITHM_PADDING,
+				"NoPadding");
+		env.put(EncryptedFileSystemProvider.SECRET_KEY, "f31BmUS)&?O!19W:"); // 128
+																				// bit
+																				// key
+		env.put(EncryptedFileSystemProvider.FILESYSTEM_ROOT_URI, "file://"
+				+ persistentFile.getParent());
 		// env.put(EncryptedFileSystemProvider.REVERSE_MODE, "true");
 
 		URI uri = URI.create("enc:///");
@@ -59,79 +64,84 @@ public class EncryptedFileSystemTest {
 		Path path = fs.getPath(persistentFile.getAbsolutePath());
 		if (!Files.exists(path)) {
 			Files.createFile(path);
-        }
-        OutputStream outStream = provider.newOutputStream(path);
-        outStream.write(testString.getBytes());
-        outStream.close();
+		}
+		OutputStream outStream = provider.newOutputStream(path);
+		outStream.write(testString.getBytes());
+		outStream.close();
 
-        InputStream inStream = provider.newInputStream(path);
-        BufferedReader in = new BufferedReader(new InputStreamReader(inStream));
-        
-        StringBuilder buf = new StringBuilder();
-        String line = null;
-        while((line = in.readLine()) != null) {
-        	buf.append(line);
-        }
-        inStream.close();
-        
-        assertEquals(testString, buf.toString());
+		InputStream inStream = provider.newInputStream(path);
+		BufferedReader in = new BufferedReader(new InputStreamReader(inStream));
+
+		StringBuilder buf = new StringBuilder();
+		String line = null;
+		while ((line = in.readLine()) != null) {
+			buf.append(line);
+		}
+		inStream.close();
+
+		assertEquals(testString, buf.toString());
 	}
 
 	@Test
 	public void testSyntaxB() throws IOException {
 
-		Path path = Paths.get(URI.create("enc://"+persistentFile.getAbsolutePath()));
+		Path path = Paths.get(URI.create("enc://"
+				+ persistentFile.getAbsolutePath()));
 		if (!Files.exists(path)) {
-        	Files.createFile(path);
-        }
+			Files.createFile(path);
+		}
 
 		OutputStream outStream = Files.newOutputStream(path);
 		outStream.write(testString.getBytes());
-        outStream.close();
+		outStream.close();
 
-        InputStream inStream = Files.newInputStream(path);
-        BufferedReader in = new BufferedReader(new InputStreamReader(inStream));
-        
-        StringBuilder buf = new StringBuilder();
-        String line = null;
-        while((line = in.readLine()) != null) {
-        	buf.append(line);
-        }
-        inStream.close();
-        
-        assertEquals(testString, buf.toString());
+		InputStream inStream = Files.newInputStream(path);
+		BufferedReader in = new BufferedReader(new InputStreamReader(inStream));
+
+		StringBuilder buf = new StringBuilder();
+		String line = null;
+		while ((line = in.readLine()) != null) {
+			buf.append(line);
+		}
+		inStream.close();
+
+		assertEquals(testString, buf.toString());
 	}
 
 	@Test
 	public void testMove() throws IOException {
 		// Files.move(tempFile, path, StandardCopyOption.ATOMIC_MOVE);
-		
-		Path path = Paths.get(URI.create("enc://"+persistentFile.getAbsolutePath()));
+
+		Path path = Paths.get(URI.create("enc://"
+				+ persistentFile.getAbsolutePath()));
 		if (!Files.exists(path)) {
-        	Files.createFile(path);
-        }
+			Files.createFile(path);
+		}
 
 		OutputStream outStream = Files.newOutputStream(path);
-        outStream.write(testString.getBytes());
-        outStream.close();
-        
-        File anotherFile = File.createTempFile("EncryptedFileSystem-", ".testmove");
-        anotherFile.deleteOnExit();
-        Path anotherPath = Paths.get(URI.create("file://"+anotherFile.getAbsolutePath()));
+		outStream.write(testString.getBytes());
+		outStream.close();
 
-        Files.move(path, anotherPath, StandardCopyOption.COPY_ATTRIBUTES, StandardCopyOption.REPLACE_EXISTING);
-        
-        InputStream inStream = Files.newInputStream(anotherPath);
-        BufferedReader in = new BufferedReader(new InputStreamReader(inStream));
-        
-        StringBuilder buf = new StringBuilder();
-        String line = null;
-        while((line = in.readLine()) != null) {
-        	buf.append(line);
-        }
-        inStream.close();
-        
-        assertEquals(testString, buf.toString());
+		File anotherFile = File.createTempFile("EncryptedFileSystem-",
+				".testmove");
+		anotherFile.deleteOnExit();
+		Path anotherPath = Paths.get(URI.create("file://"
+				+ anotherFile.getAbsolutePath()));
+
+		Files.move(path, anotherPath, StandardCopyOption.COPY_ATTRIBUTES,
+				StandardCopyOption.REPLACE_EXISTING);
+
+		InputStream inStream = Files.newInputStream(anotherPath);
+		BufferedReader in = new BufferedReader(new InputStreamReader(inStream));
+
+		StringBuilder buf = new StringBuilder();
+		String line = null;
+		while ((line = in.readLine()) != null) {
+			buf.append(line);
+		}
+		inStream.close();
+
+		assertEquals(testString, buf.toString());
 	}
 
 	@AfterClass
