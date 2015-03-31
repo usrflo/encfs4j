@@ -42,14 +42,13 @@ public class EncryptedFileSystemTest {
 		// https://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#Cipher
 
 		provider = new EncryptedFileSystemProvider();
-		Map<String, String> env = new HashMap<String, String>();
+		Map<String, Object> env = new HashMap<String, Object>();
 		env.put(EncryptedFileSystemProvider.CIPHER_ALGORITHM, "AES");
 		env.put(EncryptedFileSystemProvider.CIPHER_ALGORITHM_MODE, "CTR");
 		env.put(EncryptedFileSystemProvider.CIPHER_ALGORITHM_PADDING,
 				"NoPadding");
-		env.put(EncryptedFileSystemProvider.SECRET_KEY, "f31BmUS)&?O!19W:"); // 128
-																				// bit
-																				// key
+		// 128 bit key
+		env.put(EncryptedFileSystemProvider.SECRET_KEY, "f31BmUS)&?O!19W:".getBytes());
 		env.put(EncryptedFileSystemProvider.FILESYSTEM_ROOT_URI, "file:///"
 				+ persistentFile.getParent().replaceAll("\\\\", "/"));
 		// env.put(EncryptedFileSystemProvider.REVERSE_MODE, "true");

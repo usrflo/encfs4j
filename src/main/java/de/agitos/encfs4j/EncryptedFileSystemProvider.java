@@ -1,6 +1,6 @@
 /*
  * Encrypted Java FileSystem Provider
- * 
+ *
  * Copyright 2014 Agitos GmbH, Florian Sager, sager@agitos.de, http://www.agitos.de
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,7 +53,7 @@ import de.agitos.encfs4j.EncryptedFileSystem.EncryptedFileSystemPath;
  * FileSystemProvider implementation that works like a layer above the base file system.
  * File system operations are delegated to the base file system except SeekableByteChannel newByteChannel(...).
  * The latter returns a CipherFileChannel to decrypt/encrypt data on-the-fly.
- * 
+ *
  * How-to integrate:
 
 FileSystemProvider provider = new EncryptedFileSystemProvider();
@@ -154,13 +154,12 @@ public class EncryptedFileSystemProvider extends FileSystemProvider {
 				// FSTODO: cipher.getParameters().getProvider() --> check secret
 				// key length ?
 
-				String secretKey = (String) env.get(SECRET_KEY);
+				byte[] secretKey = (byte[]) env.get(SECRET_KEY);
 				if (secretKey == null)
 					throw new IllegalArgumentException(
 							"Missing filesystem variable '" + SECRET_KEY + "'");
 
-				secretKeySpec = new SecretKeySpec(secretKey.getBytes(),
-						cipherAlgorithm);
+				secretKeySpec = new SecretKeySpec(secretKey, cipherAlgorithm);
 
 				String fileSystemRootString = (String) env
 						.get(FILESYSTEM_ROOT_URI);
@@ -168,7 +167,7 @@ public class EncryptedFileSystemProvider extends FileSystemProvider {
 					fileSystemRootString = "file:/";
 				fileSystemRoot = Paths.get(new URI(fileSystemRootString))
 						.normalize();
-				
+
 				String isReverseString = (String) env.get(REVERSE_MODE);
 				isReverse = "true".equalsIgnoreCase(isReverseString);
 
