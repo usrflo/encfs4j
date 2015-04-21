@@ -1,6 +1,6 @@
 /*
  * Delayed encrypting/decrypting SeekableByteChannel
- * 
+ *
  * Copyright 2014 Agitos GmbH, Florian Sager, sager@agitos.de, http://www.agitos.de
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,15 +49,15 @@ import javax.crypto.spec.SecretKeySpec;
 
 /*
  * CipherFileChannel has the following properties:
- * 
+ *
  * - transparent encryption/decryption of a SeekableByteChannel.
- * 
+ *
  * - either read/write encrypted data to/from a persistent file while processing decrypted data (reverse mode off). Sample: you want to read/write encrypted data to your probably insecure local file store.
- *  
+ *
  * - or read/write decrypted data to/from a persistent file while processing encrypted data (reverse mode on). Sample: sync locally unencrypted files to a remote store with transparent encryption on the fly.
- * 
+ *
  * - encrypted/decrypted temporary data is written to a temp file in the default temporary file directory (e.g. /tmp/). In case of APPEND/WRITE, the data is persisted if you call close(). The required store space for the temp file is equal to the persistent file size.
- * 
+ *
  * - the initialization vector (IV) of the encryption is unique per relativeFilename. A relativeFilename is relative to the provided fileSystemRoot. A fileSystemRoot is similar to a mountpoint that contains all files that can be encrypted/decrypted with the same symmetric key.
  */
 
@@ -147,10 +147,12 @@ public class CipherFileChannel implements SeekableByteChannel {
 		}
 	}
 
+	@Override
 	public boolean isOpen() {
 		return this.isOpen;
 	}
 
+	@Override
 	public long position() throws IOException {
 		// as long as the transformed channel is not initialized get the
 		// position from the persistent channel
@@ -158,6 +160,7 @@ public class CipherFileChannel implements SeekableByteChannel {
 				: this.trafoChannel.position();
 	}
 
+	@Override
 	public SeekableByteChannel position(long newPosition) throws IOException {
 		// as long as the transformed channel is not initialized set the
 		// position on the persistent channel
@@ -167,6 +170,7 @@ public class CipherFileChannel implements SeekableByteChannel {
 		return this;
 	}
 
+	@Override
 	public int read(ByteBuffer dst) throws IOException {
 
 		if (this.trafoChannel == null) {
@@ -177,6 +181,7 @@ public class CipherFileChannel implements SeekableByteChannel {
 		return this.trafoChannel.read(dst);
 	}
 
+	@Override
 	public long size() throws IOException {
 		// as long as the transformed channel is not initialized get the
 		// information from the persistent channel
@@ -184,6 +189,7 @@ public class CipherFileChannel implements SeekableByteChannel {
 				: this.trafoChannel.size();
 	}
 
+	@Override
 	public SeekableByteChannel truncate(long length) throws IOException {
 		// as long as the transformed channel is not initialized truncate the
 		// persistent channel
@@ -192,6 +198,7 @@ public class CipherFileChannel implements SeekableByteChannel {
 		return this;
 	}
 
+	@Override
 	public int write(ByteBuffer src) throws IOException {
 
 		if (this.trafoChannel == null) {
@@ -205,12 +212,11 @@ public class CipherFileChannel implements SeekableByteChannel {
 		return bytesWritten;
 	}
 
+	@Override
 	public void close() throws IOException {
 
 		if (this.trafoChannel != null) {
 			this.closeTrafoChannel();
-			this.trafoChannel.close();
-			this.trafoFile.close();
 		}
 
 		this.persistentChannel.close();
@@ -278,13 +284,15 @@ public class CipherFileChannel implements SeekableByteChannel {
 					new CipherOutputStream(Channels
 							.newOutputStream(this.persistentChannel), cipher));
 
-			// finally remove the temp file
-			this.tmpFile.delete();
-
 		} catch (InvalidKeyException | NoSuchAlgorithmException
 				| DigestException | NoSuchPaddingException
 				| InvalidAlgorithmParameterException e) {
 			throw new IOException(e.getMessage(), e);
+		} finally {
+			// finally remove the temp file
+			this.trafoChannel.close();
+			this.trafoFile.close();
+			this.tmpFile.delete();
 		}
 	}
 
