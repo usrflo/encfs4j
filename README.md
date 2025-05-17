@@ -24,14 +24,6 @@ Two modes of operation
   *Sample:* sync locally unencrypted data to a remote file store with file content being encrypted on-the-fly. 
 
 
-Warning
--------
-
-This software is still unstable and there might be data corruption bugs hiding. So use it carefully at your own risk.
-
-If you encounter any problems please create an issue on Github.
-
-
 Sample Integration
 ------------------
 
